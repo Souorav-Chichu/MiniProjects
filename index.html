@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+    margin: 0;
+    padding: 0;
+    font-family: monospace;
+    box-sizing: border-box;
+} 
+body{ 
+    background: linear-gradient(90deg, #adad15b2, #6fa118c2);
+}
+.app{
+    background: #fff;
+    width: 90%;
+    max-width: 600px;
+    margin: 100px auto 0;
+    border-radius: 10px;
+    padding: 30px;
+    
+}
+.app h1{
+    text-align: center;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 35px;
+    color: black;
+    font-weight: 300;
+    border-bottom: 1px solid black;
+}
+.quiz{
+    padding: 30px 0;
+}
+.quiz h2{
+    font-size: 18px;
+    color: rgb(25, 25, 27);
+}
+.btn{
+    background: #fff;
+    color: #222;
+    width: 100%;
+    border: 1px solid #222;
+    padding: 10px;
+    font-weight: 600;
+    margin: 10px 0;
+    text-align: left;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .4s;
+}
+.btn:hover:not([disabled]){
+    background: black;
+    color: white;
+}
+.btn:disabled{
+    cursor: no-drop;
+}
+#next-btn{
+    background: rgb(121, 194, 11);
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    width: 150px;
+    border: 0;
+    padding: 10px;
+    margin: 20px auto 0;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+
+}
+#back-btn{
+    background: rgb(217, 37, 37);
+    color: white;
+    font-weight: 500;
+    width: 150px;
+    border: 0;
+    padding: 10px;
+    margin: 20px auto 0;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+}
+
+.correct{
+    background: #9aeabc;
+}
+.incorrect{
+    background: #ff9393;
+}
+.btn-class{
+    display: flex;
+}
+</style>
+
+<body>
+    <div class="app">
+        <h1>JavaScript Quiz</h1>
+        <div class="quiz">
+            <h2 id="question">Text</h2>
+            <div id="answer-buttons">
+                <button class="btn">1</button>
+                <button class="btn">2</button>
+                <button class="btn">3</button>
+                <button class="btn">4</button>
+            </div>
+            <div class="btn-class">
+                <button id="back-btn">Back</button>
+                <button id="next-btn">Next</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const questions = [
+    {
+        question: "What type of language is JavaScript?",
+        answers: [
+            {text: "Object-Oriented", state: false},
+            {text: "Assembly Language", state: false},
+            {text: "High-level", state: false},
+            {text: "Object-Based", state: true},
+        ]
+    },
+    {
+        question: "The \"function\" and \"var\" are known as?",
+        answers: [
+            {text: "keywords", state: false},
+            {text: "DataTypes", state: false},
+            {text: "Prototypes", state: false},
+            {text: "Declaration Statements", state: true},
+        ]
+    },
+    {
+        question: "In Which Year, JavaScript was Developed?",
+        answers: [
+            {text: "1998", state: false},
+            {text: "1975", state: false},
+            {text: "1995", state: true},
+            {text: "1988", state: false},
+        ]
+    },
+    {
+        question: "Which of the following takes precedence over the others if the names are same?",
+        answers: [
+            {text: "Global Variable", state: false},
+            {text: "Local Element", state: true},
+            {text: "Two of the above", state: false},
+            {text: "None of the above", state: false},
+        ]
+    },
+    {
+        question: "Which of the following type of variable is Volatile?",
+        answers: [
+            {text: "Mutable variable", state: true},
+            {text: "Dynamic variable", state: false},
+            {text: "Volatile variable", state: false},
+            {text: "Immutable variable", state: false},
+        ]
+    },
+    {
+        question: "In JS, Which of the following is not considered as an error?",
+        answers: [
+            {text: "Syntax Error", state: false},
+            {text: "Missing of Semicolons", state: false},
+            {text: "Division by Zero", state: true},
+            {text: "Missing of Bracket", state: false},
+        ]
+    },
+    {
+        question: "which of the following number Object function returns the value of the number?",
+        answers: [
+            {text: "toString()", state: false},
+            {text: "valueOf()", state: true},
+            {text: "toLocaleString()", state: false},
+            {text: "toPrecision()", state: false},
+        ]
+    },
+    {
+        question: "Who was the Creator of JavaScript?",
+        answers: [
+            {text: "Andrew Tate", state: false},
+            {text: "ElonMusk", state: false},
+            {text: "Tristian Talisman", state: false},
+            {text: "Brendan Erich", state: true},
+        ]
+    },
+    {
+        question: "In JS what is used for Calling Function Definition Expression?",
+        answers: [
+            {text: "Function Prototype", state: false},
+            {text: "Function literal", state: true},
+            {text: "Function calling", state: false},
+            {text: "Function Declaration", state: false},
+        ]
+    },
+    {
+        question: "Which of the Following is a Ternary Operator?",
+        answers: [
+            {text: "?", state: true},
+            {text: ":", state: false},
+            {text: "-", state: false},
+            {text: "+", state: false},
+        ]
+    }
+];
+const questionElement = document.getElementById("question");
+const answerButtons = document.getElementById("answer-buttons");
+const nextButton = document.getElementById("next-btn");
+const backButton = document.getElementById("back-btn");
+
+let currentQuestionIndex = 0;
+let score = 0;
+function startQuiz(){
+    currentQuestionIndex = 0;
+    score = 0;
+    nextButton.innerHTML = "Next";
+    backButton.innerHTML = "Back";
+    showQuestion();
+}
+function showQuestion(){
+    resetState();
+    let currentQuestion = questions[currentQuestionIndex];
+    let questionNo = currentQuestionIndex + 1;
+    questionElement.innerHTML = questionNo +".) "+ currentQuestion.question;
+
+    currentQuestion.answers.forEach(answer => {
+        const button = document.createElement("button");
+        button.innerHTML = answer.text;
+        button.classList.add("btn");
+        answerButtons.appendChild(button);
+        if(answer.state){
+            button.dataset.state = answer.state; 
+        }
+        button.addEventListener("click",selectAnswer);
+    });
+    currentQuestionIndex == 0 ? document.getElementById("back-btn").style = "display:none" : document.getElementById("back-btn").style = "display:block";
+}
+
+function resetState(){
+    nextButton.style.display = "none";
+    backButton.style.display = "none";
+    while(answerButtons.firstChild){
+        answerButtons.removeChild(answerButtons.firstChild);
+    }
+}
+
+function selectAnswer(e){
+    const selectedBtn = e.target;
+    const isCorrect = selectedBtn.dataset.state === "true";
+    if(isCorrect){
+        selectedBtn.classList.add("correct");
+        score++;
+    }
+    else{
+        selectedBtn.classList.add("incorrect");
+    }
+    Array.from(answerButtons.children).forEach(button => {
+        if(button.dataset.state === "true"){
+            button.classList.add("correct");
+        }
+        button.disabled = true;
+    });
+    nextButton.style.display = "block";
+    backButton.style.display = "block";
+}
+
+function showScore(){
+    resetState();
+    questionElement.innerHTML = `Your Score is ${score}`;
+    nextButton.innerHTML = "Attend Quiz Again";
+    nextButton.style.display = "block";
+}
+
+function handleNextButton(){
+    currentQuestionIndex++;
+    if(currentQuestionIndex < questions.length){
+        showQuestion();
+    }
+    else{
+        showScore();
+    }
+}
+
+function handleBackButton(){
+    currentQuestionIndex--;
+    if((currentQuestionIndex < questions.length)){
+        showQuestion();
+    }
+}
+
+
+backButton.addEventListener("click" , ()=> {
+   if(currentQuestionIndex < questions.length){
+        handleBackButton();
+    }
+    else{
+        startQuiz();
+    }
+});
+
+nextButton.addEventListener("click", ()=> {
+    if(currentQuestionIndex < questions.length){
+        handleNextButton();
+    }
+    else{
+        startQuiz();
+    }
+});
+
+startQuiz();
+</script>
+</html>
